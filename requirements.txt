@@ -1,0 +1,5 @@
+yfinance>=0.2.55
+lightweight-charts~=2.1
+pandas~=2.2.3
+pylint~=3.3.6
+rope~=1.13.0
