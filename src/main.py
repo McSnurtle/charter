@@ -6,13 +6,10 @@ from time import sleep
 from typing import Any
 
 from utils.scrape import get_historical
-from utils.ui import is_linux_x11, popup
+from utils.ui import popup
 
 import pandas as pd
 from lightweight_charts import Chart
-from platformdirs.windows import Windows
-from pylint.reporters.ureports.nodes import Title
-from rope.base.oi.type_hinting.evaluate import Evaluator
 
 
 class UI(Chart):
