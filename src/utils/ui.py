@@ -1,7 +1,9 @@
 # src/utils/ui.py
 # imports
 import os
+import json
 import platform
+from typing import Any
 from tkinter import messagebox
 
 
@@ -24,3 +26,6 @@ def popup(title: str = "Popup Notification", message: str = "", icon: str = "inf
     :param options: str, the preset of response options for the user, valid options are: [ok, okcancel, retrycancel, yesno, yesnocancel]"""
 
     return messagebox.Message(title=title, message=message, icon=icon, type=options).show()
+
+def get_preferences() -> dict[str, Any]:
+    return json.load(open('etc/preferences.json', 'r'))

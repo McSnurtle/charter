@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 from utils.indicators import registry as indicators
 from utils.scrape import get_historical
-from utils.ui import popup
+from utils.ui import get_preferences, popup
 
 import pandas as pd
 from lightweight_charts import Chart
@@ -19,11 +19,11 @@ class UI(Chart):
     SYMBOL: str = "BTC-USD"
     INTERVAL: str = "1d"
 
-    def __init__(self, symbol: str = "BTC-USD"):
+    def __init__(self, config: dict[str, Any] = {}, symbol: str = "BTC-USD"):
         super().__init__(toolbox=True)
         # init
         self.dataframe: pd.DataFrame = pd.DataFrame()
-
+        self.config: dict[str, Any] = config
         self.indicators: dict[str, bool] = {}
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
@@ -66,6 +66,8 @@ class UI(Chart):
         line.set(data)
 
     def init_data(self) -> None:
+        self.init_config()
+
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
             popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
@@ -74,6 +76,10 @@ class UI(Chart):
         scrape_thread: Thread = Thread(target=self.scrape_loop)
         scrape_thread.start()
         self.threads.append(scrape_thread)
+
+    def init_config(self) -> dict[str, Any]:
+        self.REFRESH_RATE = self.config['chart']['refresh_rate']
+        return self.config
 
     def scrape_loop(self) -> None:
         while self.is_alive:
@@ -116,7 +122,8 @@ class UI(Chart):
 
 
 if __name__ == "__main__":
-    print(indicators.list_names())
+    print(f"Using indicator set: {indicators.list_names()}...")
+    print(f"Using config: {get_preferences()}")
 
-    root = UI(symbol="BTC-USD")
+    root = UI(config=get_preferences(), symbol="BTC-USD")
     root.show(block=True)
