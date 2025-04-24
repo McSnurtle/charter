@@ -44,9 +44,6 @@ if __name__ != "__main__":
     print("amogus")
     indicators: dict[str, Callable] = {}
     calculators: str = os.path.join(os.path.dirname(__file__), "calculators")
-    print(f"DEBUG CALCULATORS: {calculators}")
     for script in os.listdir(calculators):
-        print(f"DEBUG SCRIPTS: {script}")
         if script.endswith('.py'):
-            print(f"DEBUG IMPORTING: {script}")
             import_module(f"utils.indicators.calculators.{script[:-3]}")  # remove .py to only run `import script` and not `import script.py`

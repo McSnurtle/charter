@@ -1,9 +1,9 @@
 # src/utils/ui.py
 # imports
 import os
+import json
 import platform
-import tkinter as tk
-from typing import Callable
+from typing import Any
 from tkinter import messagebox
 
 
@@ -17,8 +17,6 @@ def is_linux_x11():
 
     return session_type == "x11" or (session_type == "" and display.startswith(":"))
 
-def indicator_selector()
-
 def popup(title: str = "Popup Notification", message: str = "", icon: str = "info", options: str = "ok") -> str | None:
     """Display a universal popup notification with the specified message
 
@@ -28,3 +26,6 @@ def popup(title: str = "Popup Notification", message: str = "", icon: str = "inf
     :param options: str, the preset of response options for the user, valid options are: [ok, okcancel, retrycancel, yesno, yesnocancel]"""
 
     return messagebox.Message(title=title, message=message, icon=icon, type=options).show()
+
+def get_preferences() -> dict[str, Any]:
+    return json.load(open('etc/preferences.json', 'r'))

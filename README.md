@@ -1,5 +1,9 @@
-# charter
+# charter ⛵
 A lightweight, live chart analysis tool written entirely in vanilla python (maybe)!
+
+![Screenshot_20250424_172921](https://github.com/user-attachments/assets/fdec11df-7eaa-47ec-ad70-12fe287ee577)
+
+Using live data from the Yahoo! Finance API via the yfinance module, and the UI by TradingView's own Lightweight Charts API via the lightweight-charts-python wrapper: this sleek, live and intuitive chart analysis tool is sure to get you where you need to go, and further.
 
 ## Versioning
 This project strictly adheres to the very real rules and regulations outlined in [this random stackoverflow comment](<https://softwareengineering.stackexchange.com/a/255201>) by "amon".
