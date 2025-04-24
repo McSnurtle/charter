@@ -12,5 +12,5 @@ def calculate(df: pd.DataFrame, period: int = 50) -> pd.DataFrame:
 
     return pd.DataFrame({
         'time': df['date'],
-        f'SMA {period}': df['close'].rolling(window=period).mean()
+        'SMA': df['close'].rolling(window=period).mean()
     }).dropna()

@@ -2,8 +2,9 @@
 import sys
 from threading import Thread
 from time import sleep
-from typing import Any
+from typing import Any, Callable
 
+from utils.indicators import registry as indicators
 from utils.scrape import get_historical
 from utils.ui import popup
 
@@ -31,6 +32,7 @@ class UI(Chart):
         self.set(df=self.dataframe)
         self.update_watermark()
         self.topbar.textbox('symbol', symbol)
+        self.topbar.menu("indicators", options=indicators.list_names(), default="SMA", func=self.set_indicator)
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
 
         self.events.search += self.on_search
@@ -50,6 +52,13 @@ class UI(Chart):
     def on_timeframe_change(self, state: Any) -> None:
         self.INTERVAL = self.topbar['timeframe'].value
         self.refresh()
+
+    def set_indicator(self, callback: Any) -> None:
+        indicator_name: str = self.topbar['indicators'].value
+        line = self.create_line(name=indicator_name)
+        calculator: Callable = indicators.get_function(name=indicator_name)
+        data: pd.DataFrame = calculator(self.dataframe)
+        line.set(data)
 
     def scrape_loop(self) -> None:
         while self.SCRAPING:
@@ -88,16 +97,18 @@ class UI(Chart):
         scrape_thread: Thread = Thread(target=self.scrape_loop)
         scrape_thread.start()
         self.threads.append(scrape_thread)
-
         return scrape_thread
 
     def kill(self) -> None:
+        print("WARN | KILLING SELF!")
         self.SCRAPING = False
         self.exit()
         sys.exit(1)
 
 
 if __name__ == "__main__":
+    print(indicators.list_names())
+
     root = UI(symbol="BTC-USD")
     root.start_loop()
     root.show(block=True)
