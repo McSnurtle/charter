@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 from utils.indicators import registry as indicators
 from utils.scrape import get_historical
-from utils.ui import popup, open_indicator_selector
+from utils.ui import get_preferences, popup, open_indicator_selector
 
 import pandas as pd
 from lightweight_charts import Chart
@@ -19,11 +19,11 @@ class UI(Chart):
     SYMBOL: str = "BTC-USD"
     INTERVAL: str = "1d"
 
-    def __init__(self, symbol: str = "BTC-USD"):
+    def __init__(self, config: dict[str, Any] = {}, symbol: str = "BTC-USD"):
         super().__init__(toolbox=True)
         # init
         self.dataframe: pd.DataFrame = pd.DataFrame()
-
+        self.config: dict[str, Any] = config
         self.indicators: dict[str, bool] = {}
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
@@ -77,6 +77,8 @@ class UI(Chart):
 
     def init_data(self) -> None:
         # initial chart data
+        self.init_config()
+
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
             popup("Data Error", f"There was an error retrieving the market data for symbol '{self.SYMBOL}'. Please check the logs for more information", icon="error")
@@ -89,6 +91,10 @@ class UI(Chart):
         for indicator_name in indicators.list_names():
             if isinstance(indicator_name, str):
                 self.indicators[indicator_name] = False
+
+    def init_config(self) -> dict[str, Any]:
+        self.REFRESH_RATE = self.config['chart']['refresh_rate']
+        return self.config
 
     def scrape_loop(self) -> None:
         while self.is_alive:
@@ -132,7 +138,8 @@ class UI(Chart):
 
 
 if __name__ == "__main__":
-    print(indicators.list_names())
+    print(f"Using indicator set: {indicators.list_names()}...")
+    print(f"Using config: {get_preferences()}")
 
-    root = UI(symbol="BTC-USD")
+    root = UI(config=get_preferences(), symbol="BTC-USD")
     root.show(block=True)
