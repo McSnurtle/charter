@@ -1,0 +1,17 @@
+#src/utils/indicators/calculators/sma20.py
+# imports
+import pandas as pd
+from utils.indicators import registry
+
+
+@registry.register_indicator("SMA 20")
+def calculate(df: pd.DataFrame) -> pd.DataFrame:
+    """Returns a dataframe with the same dimensions as the input of the simple moving average
+
+    :param df: pd.DataFrame, the input chart data (return only calculates the ['close'].)
+    """
+
+    return pd.DataFrame({
+        'time': df['date'],
+        'SMA 20': df['close'].rolling(window=20).mean()
+    }).dropna()
