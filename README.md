@@ -1,5 +1,5 @@
 # charter
-A lightweight chart analysis tool written entirely in vanilla python (maybe)!
+A lightweight, live chart analysis tool written entirely in vanilla python (maybe)!
 
 ## What does this file / dir do?
 ### /data/
