@@ -1,4 +1,4 @@
-# charter
+# charter ⛵
 A lightweight, live chart analysis tool written entirely in vanilla python (maybe)!
 
 ![Screenshot_20250424_172921](https://github.com/user-attachments/assets/fdec11df-7eaa-47ec-ad70-12fe287ee577)
