@@ -2,8 +2,6 @@
 # imports
 import os
 import platform
-import tkinter as tk
-from typing import Callable
 from tkinter import messagebox
 
 
@@ -16,8 +14,6 @@ def is_linux_x11():
     display = os.environ.get("DISPLAY", "")
 
     return session_type == "x11" or (session_type == "" and display.startswith(":"))
-
-def indicator_selector()
 
 def popup(title: str = "Popup Notification", message: str = "", icon: str = "info", options: str = "ok") -> str | None:
     """Display a universal popup notification with the specified message
