@@ -15,8 +15,7 @@ from lightweight_charts import Chart
 
 class UI(Chart):
 
-    REFRESH_RATE: int = 30   # time to wait (seconds) between refreshing the markets. Min: 1min
-    SCRAPING: bool = True   # should the market scraping be live?
+    REFRESH_RATE: int = 60   # time to wait (seconds) between refreshing the markets. Min: 1min
     SYMBOL: str = "BTC-USD"
     INTERVAL: str = "1d"
 
@@ -24,6 +23,7 @@ class UI(Chart):
         super().__init__(toolbox=True)
         # init
         self.dataframe: pd.DataFrame = pd.DataFrame()
+
         self.indicators: dict[str, bool] = {}
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
@@ -43,6 +43,8 @@ class UI(Chart):
         # vars
         self.threads: list[Thread] = []
 
+        self.init_data()
+
     def on_search(self, state: Any, searched_string: str) -> None:
         symbol = self.SYMBOL
         self.SYMBOL = searched_string
@@ -55,6 +57,7 @@ class UI(Chart):
         self.INTERVAL = self.topbar['timeframe'].value
         self.refresh()
 
+
     def set_indicator(self, callback: Any) -> None:
         indicator_name: str = self.topbar['indicators'].value
         line = self.create_line(name=indicator_name)
@@ -62,8 +65,18 @@ class UI(Chart):
         data: pd.DataFrame = calculator(self.dataframe)
         line.set(data)
 
+    def init_data(self) -> None:
+        self.update_chart()
+        if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
+            popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
+            self.kill()
+
+        scrape_thread: Thread = Thread(target=self.scrape_loop)
+        scrape_thread.start()
+        self.threads.append(scrape_thread)
+
     def scrape_loop(self) -> None:
-        while self.SCRAPING:
+        while self.is_alive:
             print(f"Pulling new data to dataframe on ticker {self.SYMBOL.upper()}-{self.INTERVAL.upper()}...")
             self.update_chart(keep_drawings=True)
 
@@ -95,12 +108,6 @@ class UI(Chart):
             return True
         return False
 
-    def start_loop(self) -> Thread:
-        scrape_thread: Thread = Thread(target=self.scrape_loop)
-        scrape_thread.start()
-        self.threads.append(scrape_thread)
-        return scrape_thread
-
     def kill(self) -> None:
         print("WARN | KILLING SELF!")
         self.SCRAPING = False
@@ -112,5 +119,4 @@ if __name__ == "__main__":
     print(indicators.list_names())
 
     root = UI(symbol="BTC-USD")
-    root.start_loop()
     root.show(block=True)
