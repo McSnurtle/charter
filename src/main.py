@@ -1,3 +1,4 @@
+#src/main.py
 # imports
 import sys
 from threading import Thread
@@ -23,6 +24,7 @@ class UI(Chart):
         super().__init__(toolbox=True)
         # init
         self.dataframe: pd.DataFrame = pd.DataFrame()
+        self.indicators: dict[str, bool] = {}
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
             popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")

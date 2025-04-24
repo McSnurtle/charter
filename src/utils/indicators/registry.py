@@ -1,3 +1,4 @@
+# src/utils/indicators/registry.py
 # imports
 import os
 from importlib import import_module
@@ -12,6 +13,12 @@ def list_functions() -> list[Callable]:
 
 def get_function(name: str) -> Callable:
     return indicators[name]
+
+def get_function_options(name: str) -> tuple[str, ...]:
+    return tuple(indicators[name].__code__.co_varnames)
+
+def get_function_deaults(name: str) -> tuple[Any, ...] | None:
+    return indicators[name].__defaults__
 
 def register_indicator(name: Any = None):
     """Used to regiter a decorater to the Register() under a specific name.
