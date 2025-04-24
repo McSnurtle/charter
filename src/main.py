@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 from utils.indicators import registry as indicators
 from utils.scrape import get_historical
-from utils.ui import popup
+from utils.ui import popup, open_indicator_selector
 
 import pandas as pd
 from lightweight_charts import Chart
@@ -33,12 +33,13 @@ class UI(Chart):
         self.legend(True)
         self.set(df=self.dataframe)
         self.update_watermark()
-        self.topbar.textbox('symbol', symbol)
-        self.topbar.menu("indicators", options=indicators.list_names(), default="SMA", func=self.set_indicator)
+        self.topbar.button('symbol', symbol, func=self.refresh_chart)
+        self.topbar.button("indicators", "Indicators", func=self.set_indicators)
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
 
         self.events.search += self.on_search
-        self.hotkey("ctrl", "R", self.refresh)
+        self.hotkey("ctrl", "R", self.refresh_chart)
+        self.hotkey("ctrl", "C", self.set_indicators)
 
         # vars
         self.threads: list[Thread] = []
@@ -48,32 +49,46 @@ class UI(Chart):
     def on_search(self, state: Any, searched_string: str) -> None:
         symbol = self.SYMBOL
         self.SYMBOL = searched_string
-        if not self.refresh(keep_drawings=False):   # if the new symbol data doesn't exist
+        if not self.refresh_chart(keep_drawings=False):   # if the new symbol data doesn't exist
             self.SYMBOL = symbol
-            self.refresh(keep_drawings=False)
+            self.refresh_chart(keep_drawings=False)
         self.topbar['symbol'].set(self.SYMBOL)
 
     def on_timeframe_change(self, state: Any) -> None:
         self.INTERVAL = self.topbar['timeframe'].value
-        self.refresh()
+        self.refresh_chart()
 
+    def set_indicators(self, callback: Any = None) -> None:
+        self.indicators: dict[str, bool] = open_indicator_selector(self.indicators)
+        self.refresh_indicators()
 
-    def set_indicator(self, callback: Any) -> None:
-        indicator_name: str = self.topbar['indicators'].value
-        line = self.create_line(name=indicator_name)
-        calculator: Callable = indicators.get_function(name=indicator_name)
-        data: pd.DataFrame = calculator(self.dataframe)
-        line.set(data)
+    def refresh_indicators(self) -> None:
+        self.clear_lines()
+
+        for name, state in self.indicators.items():
+            if state:
+                line = self.create_line(name=name, price_line=True, price_label=True)
+                calculator: Callable = indicators.get_function(name=name)
+                data: pd.DataFrame = calculator(self.dataframe)
+                line.set(data)
+
+    def clear_lines(self):
+        self.run_script(f'if ({self.id}.lines) {self.id}.toolBox.clearDrawings()')
 
     def init_data(self) -> None:
+        # initial chart data
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
-            popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
+            popup("Data Error", f"There was an error retrieving the market data for symbol '{self.SYMBOL}'. Please check the logs for more information", icon="error")
             self.kill()
-
+        # live chart loop
         scrape_thread: Thread = Thread(target=self.scrape_loop)
         scrape_thread.start()
         self.threads.append(scrape_thread)
+        # indicator init
+        for indicator_name in indicators.list_names():
+            if isinstance(indicator_name, str):
+                self.indicators[indicator_name] = False
 
     def scrape_loop(self) -> None:
         while self.is_alive:
@@ -87,6 +102,7 @@ class UI(Chart):
         if isinstance(df, pd.DataFrame) and not df.empty:
             self.dataframe = df
             self.set(df=self.dataframe, keep_drawings=keep_drawings)
+            self.refresh_indicators()
             return df
         else:
             popup("Data Error", f"There was an error retrieving the market data for symbol '{self.SYMBOL}'. Please check the logs for more information", icon="error")
@@ -96,7 +112,7 @@ class UI(Chart):
         self.watermark(f"{self.SYMBOL} {self.INTERVAL.upper()}", color="rgba(100, 100, 120, 0.4)")
         return f"{self.SYMBOL} {self.INTERVAL.upper()}"
 
-    def refresh(self, keep_drawings: bool = True) -> bool:
+    def refresh_chart(self, keep_drawings: bool = True) -> bool:
         """Returns true if the chart was able to refresh and retrieve new data"""
         # self.win.run_script("document.body.style.cursor = 'wait';")
         self.spinner(True)

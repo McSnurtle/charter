@@ -2,10 +2,10 @@
 # imports
 import os
 import platform
-import tkinter as tk
-from typing import Callable
 from tkinter import messagebox
+from tkinter.simpledialog import askstring
 
+from numpy import indices
 
 # functions
 def is_linux_x11():
@@ -17,7 +17,16 @@ def is_linux_x11():
 
     return session_type == "x11" or (session_type == "" and display.startswith(":"))
 
-def indicator_selector()
+def open_indicator_selector(indicators: dict[str, bool]) -> dict[str, bool]:
+    name = askstring(title="Indicator Selector", prompt="Enter the name of the indicator you would like to toggle:", initialvalue="e.g. SMA")
+    if name in indicators.keys() and isinstance(name, str):     # if the input was successful (is str) and is a valid indicator name...
+        # indicator status toggling
+        if indicators[name]:
+            indicators[name] = False
+        elif not indicators[name]:
+            indicators[name] = True
+    else: popup(title="Indicator selection error", message=f"There was an error finding the indicator '{name}'. Please try again.", icon="error")
+    return indicators
 
 def popup(title: str = "Popup Notification", message: str = "", icon: str = "info", options: str = "ok") -> str | None:
     """Display a universal popup notification with the specified message
