@@ -1,9 +1,9 @@
 name: "Feature request"
-description: "Suggest an idea or mechanic to add or remove from the server"
-title: "[Feature] Cheese burgers"
+description: "Suggest an idea or feature to add to the program"
+title: "[Feature] persistent drawings"
 labels: ["feature"]
 assignees: ["McSnurtle"]
-projects: ["McSnurtle/1"]
+projects: ["McSnurtle/3"]
 
 body:
   - type: markdown
@@ -18,35 +18,7 @@ body:
       description: |
         A clear and concise description of what you would like to see added / removed and why.
       placeholder: |
-        Cheese burgers would be edible items, craftable and able to be automated, found occasionally in village chests and sold by farmers.
-    validations:
-      required: true
-  - type: textarea
-    id: problems
-    attributes:
-      label: "What problems does this feature solve / cause?"
-      description: |
-        Describe the problems the feature would solve, or cause for the player.
-      placeholder: |
-        Solves the issue of not finding enough food from Farmer's Delight in village chests.
-    validations:
-      required: true
-  - type: dropdown
-    id: systems
-    attributes:
-      label: "Which pre-existing system does this feature tie into?"
-      description: |
-        What systems would obviously conflict with or impede the implementation / removal of this feature?
-      multiple: true
-      options:
-        - Terrain
-        - Structure generation
-        - Gameplay balancing
-        - Recipes
-        - UI
-        - Mod compatibility
-        - Other
-        - N/A
+        Drawings on charts would be persistent between restarts, and be seperate between charts / independently cached / stored.
     validations:
       required: true
   - type: textarea
