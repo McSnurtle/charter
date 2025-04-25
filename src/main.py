@@ -32,6 +32,7 @@ class UI(Chart):
         self.config: dict[str, Any] = config
         self.drawings: list[dict] = []
         self.threads: list[Thread] = []
+
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
             popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
@@ -41,13 +42,11 @@ class UI(Chart):
         self.set(df=self.dataframe)
         self.update_watermark()
         self.topbar.button('symbol', symbol, func=self.refresh_chart)
-        # self.topbar.button("indicators", "Indicators", func=self.set_indicators)
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
 
         self.events.search += self.on_search
 
         self.hotkey("ctrl", "R", self.refresh_chart)
-        self.hotkey("ctrl", "C", self.clear_lines)
         self.hotkey("ctrl", "S", self.save_current_drawings)
         self.hotkey("ctrl", "L", self.load_saved_drawings)
         self.hotkey("ctrl", "P", self.on_screenshot)
@@ -73,7 +72,6 @@ class UI(Chart):
         for name in indicators.list_names():
             if isinstance(name, str):
                 line: Line = self.create_line(name=name, price_line=True, price_label=True)
-                line.id = name
                 calculator: Callable = indicators.get_function(name=name)
                 data: pd.DataFrame = calculator(self.dataframe)
                 line.set(data)
