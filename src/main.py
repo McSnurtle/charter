@@ -23,7 +23,6 @@ class UI(Chart):
         super().__init__(toolbox=True)
         # init
         self.dataframe: pd.DataFrame = pd.DataFrame()
-        self.config: dict[str, Any] = config
         self.indicators: dict[str, bool] = {}
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
