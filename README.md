@@ -5,7 +5,7 @@ A lightweight, live chart analysis tool written entirely in vanilla python (mayb
 
 Using live data from the Yahoo! Finance API via the [yfinance module](<https://github.com/ranaroussi/yfinance>), and the UI by TradingView's own Lightweight Charts API via the [lightweight-charts-python](<https://github.com/louisnw01/lightweight-charts-python>) wrapper: this sleek, live and intuitive chart analysis tool is sure to get you where you need to go, and further.
 
-## Installation / Quick Start🌨️
+## Installation / Quick Start 🌨️
 To install the project, first ensure you have it's sole dependency: [`Python3`](<https://www.python.org/downloads/>).
 
 **1.** Clone the project
