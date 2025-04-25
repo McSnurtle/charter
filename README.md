@@ -56,8 +56,8 @@ python src/main.py
 | `<Ctrl>+L` | Load saved drawings |
 
 ## Versioning
-This project strictly adheres to the very real rules and regulations outlined in [this random stackoverflow comment](<https://softwareengineering.stackexchange.com/a/255201>) by "amon".
-![image](https://github.com/user-attachments/assets/9946aa62-9155-4741-9335-16f8856c7f9e)
+This project strictly adheres to the very real strict rules and regulations outlined in [this random stackoverflow comment](<https://softwareengineering.stackexchange.com/a/255201>) by "amon".
+![image](https://github.com/user-attachments/assets/9946aa62-9155-4741-9335-16f8856c7f9e) and loosely follows the project structuring guide as outlined in [AlexDCode/Software-Development-Project-Structure](<https://github.com/AlexDCode/Software-Development-Project-Structure/tree/master>)
 
 ## Configuration
 Below are all of the configuration options (as found in `etc/preferences.json`, their defaults, and what they do to the program:
