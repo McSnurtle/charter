@@ -1,4 +1,4 @@
-# src/utils/ui.py
+# src/utils/platform.py
 # imports
 import os
 import json
@@ -8,7 +8,7 @@ from tkinter import messagebox
 from tkinter.simpledialog import askstring
 
 # functions
-def is_linux_x11():
+def is_linux_x11() -> bool:
     if platform.system() != "Linux":
         return False
 
@@ -27,6 +27,23 @@ def open_indicator_selector(indicators: dict[str, bool]) -> dict[str, bool]:
             indicators[name] = True
     else: popup(title="Indicator selection error", message=f"There was an error finding the indicator '{name}'. Please try again.", icon="error")
     return indicators
+
+def is_linux_wayland() -> bool:
+    if platform.system() != "Linux":
+        return False
+
+    session_type = os.environ.get("XDG_SESSION_TYPE", "").lower()
+    display = os.environ.get("WAYLAND_DISPLAY")
+
+    return session_type == "wayland" or display is not None
+
+
+def is_macos() -> bool:
+    return platform.system() == "Darwin"
+
+
+def is_windows() -> bool:
+    return platform.system() == "Windows"
 
 def popup(title: str = "Popup Notification", message: str = "", icon: str = "info", options: str = "ok") -> str | None:
     """Display a universal popup notification with the specified message
