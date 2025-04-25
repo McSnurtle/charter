@@ -48,7 +48,6 @@ class UI(Chart):
 
         self.hotkey("ctrl", "R", self.refresh_chart)
         self.hotkey("ctrl", "C", self.clear_lines)
-        self.hotkey("ctrl", "R", self.refresh)
         self.hotkey("ctrl", "S", self.save_current_drawings)
         self.hotkey("ctrl", "L", self.load_saved_drawings)
         self.hotkey("ctrl", "P", self.on_screenshot)
@@ -93,7 +92,7 @@ class UI(Chart):
                 """)
         self.indicators.clear()
 
-        self.refresh(keep_drawings=False)
+        self.refresh_chart(keep_drawings=False)
 
     def on_screenshot(self, state: Any) -> bytes | None:
         print("DEBUG: saving screenshot to data/screenshots/")
