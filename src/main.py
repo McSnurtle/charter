@@ -3,7 +3,7 @@
 import sys
 from threading import Thread
 from time import sleep
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable
 
 from utils.indicators import registry as indicators
 from utils.scrape import get_historical
@@ -27,6 +27,7 @@ class UI(Chart):
         self.dataframe: pd.DataFrame = pd.DataFrame()
         self.config: dict[str, Any] = config
         self.indicators: dict[str, bool] = {}
+        self.drawings: dict[Any, Any] = {}
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
             popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
@@ -38,14 +39,14 @@ class UI(Chart):
         self.topbar.textbox('symbol', symbol)
         self.topbar.menu("indicators", options=indicators.list_names(), default="SMA", func=self.set_indicator)
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
-        
+
         # Add drawing tools menu
-        self.topbar.menu("drawing_tools", options=['None', 'Trend Line', 'Horizontal Line', 'Ray', 'Arrow', 'Text'], default='None', func=self.set_drawing_mode)
+        self.topbar.menu("drawing_tools", options=('None', 'Trend Line', 'Horizontal Line', 'Ray', 'Arrow', 'Text'), default='None', func=self.set_drawing_mode)
 
         self.events.search += self.on_search
         self.events.click += self.on_chart_click
         self.hotkey("ctrl", "R", self.refresh)
-        self.hotkey("esc", None, self.clear_drawing_mode)
+        self.hotkey("shift", "esc", self.clear_drawing_mode)
 
         # vars
         self.threads: list[Thread] = []
@@ -78,7 +79,7 @@ class UI(Chart):
 
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
-            popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
+            popup("Data Error", f"There was an error retrieving the market data for symbol '{self.symbol}'. Please check the logs for more information", icon="error")
             self.kill()
 
         scrape_thread: Thread = Thread(target=self.scrape_loop)
@@ -101,11 +102,11 @@ class UI(Chart):
         if isinstance(df, pd.DataFrame) and not df.empty:
             self.dataframe = df
             self.set(df=self.dataframe, keep_drawings=keep_drawings)
-            
+
             # Load saved drawings if not keeping existing ones
             if not keep_drawings:
                 self.load_saved_drawings()
-                
+
             return df
         else:
             popup("Data Error", f"There was an error retrieving the market data for symbol '{self.SYMBOL}'. Please check the logs for more information", icon="error")
@@ -146,24 +147,27 @@ class UI(Chart):
         self.drawing_start_point = None
         self.topbar['drawing_tools'].set('None')
 
-    def on_chart_click(self, state: Any) -> None:
+    def on_chart_click(self, state: Any, x: Any = None, y: Any = None) -> None:
         """Handle chart clicks for drawing tools"""
         if self.DRAWING_MODE == 'none':
             return
 
-        x, y = state.time, state.price
+        print(f"DEBUG: {vars(state)}")
+        x, y = state._last_bar.time, state._last_bar.close
 
         if self.drawing_start_point is None:
             self.drawing_start_point = (x, y)
             return
 
         start_x, start_y = self.drawing_start_point
-        
+
         if self.DRAWING_MODE == 'trend_line':
-            self.create_line(name=f"trendline_{x}").set_markers([
-                {'time': start_x, 'value': start_y},
-                {'time': x, 'value': y}
-            ])
+            line = self.create_line(name=f"trendline_{x}", color="rgba(255, 0, 0, 1.0)")
+            line.set(df=pd.DataFrame([
+                {f'trendline_{x}': start_x, 'value': start_y},
+                {f'trendline_{x}': x, 'value': y}
+            ]))
+            self.refresh()
         elif self.DRAWING_MODE == 'horizontal_line':
             self.create_horizontal_line(name=f"hline_{x}", price=start_y)
         elif self.DRAWING_MODE == 'ray':
@@ -181,7 +185,7 @@ class UI(Chart):
 
         # Reset drawing state
         self.drawing_start_point = None
-        
+
         # Save drawings after adding new one
         self.save_current_drawings()
 
