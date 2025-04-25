@@ -20,7 +20,7 @@ for unix:
 ```shell
 python -m venv venv \
 pip install --upgrade --verbose -r requirements.txt \
-source ./venv/bin/activate
+source ./venv/bin/activate \
 python src/main.py
 ```
 
@@ -28,7 +28,7 @@ for windows:
 ```batch
 python -m venv venv \
 pip install --upgrade --verbose -r requirements.txt \
-.\venv\Scripts\activate
+.\venv\Scripts\activate \
 python src/main.py
 ```
 
