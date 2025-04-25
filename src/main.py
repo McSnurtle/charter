@@ -41,7 +41,8 @@ class UI(Chart):
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
 
         # Add drawing tools menu
-        self.topbar.menu("drawing_tools", options=('None', 'Trend Line', 'Horizontal Line', 'Ray', 'Arrow', 'Text'), default='None', func=self.set_drawing_mode)
+        # TEMPORARILY UN-EXPOSE DRAWING TOOLS UNTIL RENDERING IS FIXED
+        # self.topbar.menu("drawing_tools", options=('None', 'Trend Line', 'Horizontal Line', 'Ray', 'Arrow', 'Text'), default='None', func=self.set_drawing_mode)
 
         self.events.search += self.on_search
         self.events.click += self.on_chart_click
@@ -152,7 +153,6 @@ class UI(Chart):
         if self.DRAWING_MODE == 'none':
             return
 
-        print(f"DEBUG: {vars(state)}")
         x, y = state._last_bar.time, state._last_bar.close
 
         if self.drawing_start_point is None:
