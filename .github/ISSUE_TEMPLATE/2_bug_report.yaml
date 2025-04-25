@@ -53,6 +53,6 @@ body:
       label: "Additional Context"
       description: "Added notes or context surrounding the issue."
       value: "None"
-      placeholder: ""
+      placeholder: "N/A"
     validations:
       required: false
