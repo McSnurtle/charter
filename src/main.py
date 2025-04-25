@@ -10,6 +10,7 @@ from utils.scrape import get_historical
 from utils.platform import get_preferences, popup
 from utils.drawings import save_drawings, load_drawings
 from utils.screenshot import save_screenshot
+from utils.clipboard import copy_image
 
 import pandas as pd
 from lightweight_charts import Chart
@@ -66,10 +67,8 @@ class UI(Chart):
         print("DEBUG: saving screenshot to data/screenshots/")
 
         filename: str | None = save_screenshot(self.SYMBOL, self.INTERVAL, self)
-        if isinstance(filename, str):
-            # COPY IMAGE F
-            pass
-        return
+        if isinstance(filename, str) and self.config["copy_screenshots"]:
+            copy_image(filename)
 
     def set_indicator(self, callback: Any) -> None:
         indicator_name: str = self.topbar['indicators'].value

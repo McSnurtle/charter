@@ -1,5 +1,6 @@
 {
   "chart": {
     "refresh_rate": 30
-  }
+  },
+  "copy_screenshots": true
 }
