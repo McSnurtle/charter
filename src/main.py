@@ -27,7 +27,8 @@ class UI(Chart):
         self.dataframe: pd.DataFrame = pd.DataFrame()
         self.config: dict[str, Any] = config
         self.indicators: dict[str, bool] = {}
-        self.drawings: dict[Any, Any] = {}
+        self.drawings: list[dict] = []
+        self.threads: list[Thread] = []
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
             popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
@@ -45,13 +46,9 @@ class UI(Chart):
         # self.topbar.menu("drawing_tools", options=('None', 'Trend Line', 'Horizontal Line', 'Ray', 'Arrow', 'Text'), default='None', func=self.set_drawing_mode)
 
         self.events.search += self.on_search
-        self.events.click += self.on_chart_click
         self.hotkey("ctrl", "R", self.refresh)
-        self.hotkey("shift", "esc", self.clear_drawing_mode)
-
-        # vars
-        self.threads: list[Thread] = []
-        self.drawing_start_point = None
+        self.hotkey("ctrl", "S", self.save_current_drawings)
+        self.hotkey("ctrl", "L", self.load_saved_drawings)
 
         self.init_data()
 
@@ -65,12 +62,12 @@ class UI(Chart):
 
     def on_timeframe_change(self, state: Any) -> None:
         self.INTERVAL = self.topbar['timeframe'].value
-        self.refresh()
+        self.refresh(keep_drawings=False)
 
 
     def set_indicator(self, callback: Any) -> None:
         indicator_name: str = self.topbar['indicators'].value
-        line = self.create_line(name=indicator_name)
+        line = self.create_line(name=indicator_name, width=2, style='solid')
         calculator: Callable = indicators.get_function(name=indicator_name)
         data: pd.DataFrame = calculator(self.dataframe)
         line.set(data)
@@ -86,6 +83,8 @@ class UI(Chart):
         scrape_thread: Thread = Thread(target=self.scrape_loop)
         scrape_thread.start()
         self.threads.append(scrape_thread)
+
+        self.load_saved_drawings()
 
     def init_config(self) -> dict[str, Any]:
         self.REFRESH_RATE = self.config['chart']['refresh_rate']
@@ -122,8 +121,10 @@ class UI(Chart):
         # self.win.run_script("document.body.style.cursor = 'wait';")
         self.spinner(True)
         self.update_watermark()
+        self.save_current_drawings()
         result = self.update_chart(keep_drawings=keep_drawings)
         # self.win.run_script("document.body.style.cursor = 'default';")
+        self.load_saved_drawings()
         self.spinner(False)
         if isinstance(result, pd.DataFrame):
             return True
@@ -135,83 +136,15 @@ class UI(Chart):
         self.exit()
         sys.exit(1)
 
-    def set_drawing_mode(self, state: Any) -> None:
-        """Set the current drawing tool mode"""
-        mode = self.topbar['drawing_tools'].value
-        self.DRAWING_MODE = mode.lower().replace(' ', '_')
-        if self.DRAWING_MODE == 'none':
-            self.clear_drawing_mode()
-
-    def clear_drawing_mode(self, state: Any = None) -> None:
-        """Clear the current drawing mode and reset state"""
-        self.DRAWING_MODE = 'none'
-        self.drawing_start_point = None
-        self.topbar['drawing_tools'].set('None')
-
-    def on_chart_click(self, state: Any, x: Any = None, y: Any = None) -> None:
-        """Handle chart clicks for drawing tools"""
-        if self.DRAWING_MODE == 'none':
-            return
-
-        x, y = state._last_bar.time, state._last_bar.close
-
-        if self.drawing_start_point is None:
-            self.drawing_start_point = (x, y)
-            return
-
-        start_x, start_y = self.drawing_start_point
-
-        if self.DRAWING_MODE == 'trend_line':
-            line = self.create_line(name=f"trendline_{x}", color="rgba(255, 0, 0, 1.0)")
-            line.set(df=pd.DataFrame([
-                {f'trendline_{x}': start_x, 'value': start_y},
-                {f'trendline_{x}': x, 'value': y}
-            ]))
-            self.refresh()
-        elif self.DRAWING_MODE == 'horizontal_line':
-            self.create_horizontal_line(name=f"hline_{x}", price=start_y)
-        elif self.DRAWING_MODE == 'ray':
-            self.create_line(name=f"ray_{x}").set_markers([
-                {'time': start_x, 'value': start_y},
-                {'time': x, 'value': y}
-            ]).extend_right()
-        elif self.DRAWING_MODE == 'arrow':
-            self.create_line(name=f"arrow_{x}").set_markers([
-                {'time': start_x, 'value': start_y},
-                {'time': x, 'value': y}
-            ]).style(width=2, style='arrow')
-        elif self.DRAWING_MODE == 'text':
-            self.create_label(name=f"text_{x}", text="Double click to edit", x=x, y=y)
-
-        # Reset drawing state
-        self.drawing_start_point = None
-
-        # Save drawings after adding new one
-        self.save_current_drawings()
-
-    def save_current_drawings(self) -> None:
+    def save_current_drawings(self, state: Any = None) -> None:
         """Save current chart drawings"""
-        drawings = []
-        for drawing in self.drawings:
-            if isinstance(drawing, dict):
-                drawings.append(drawing)
-        save_drawings(self.SYMBOL, self.INTERVAL, drawings)
+        path = save_drawings(self.SYMBOL, self.INTERVAL, self)
+        print(f"DEBUG: saving drawings to '{path}'")
 
-    def load_saved_drawings(self) -> None:
+    def load_saved_drawings(self, state: Any = None) -> None:
         """Load saved drawings for current symbol/interval"""
-        drawings = load_drawings(self.SYMBOL, self.INTERVAL)
-        for drawing in drawings:
-            if drawing.get('type') == 'line':
-                line = self.create_line(name=drawing['name'])
-                line.set_markers(drawing['markers'])
-                if drawing.get('extend_right'):
-                    line.extend_right()
-                if drawing.get('style'):
-                    line.style(**drawing['style'])
-            elif drawing.get('type') == 'horizontal_line':
-                self.create_horizontal_line(name=drawing['name'], price=drawing['price'])
-            elif drawing.get('type') == 'label':
-                self.create_label(name=drawing['name'], text=drawing['text'], x=drawing['x'], y=drawing['y'])
+        path = load_drawings(self.SYMBOL, self.INTERVAL, self)
+        print(f"DEBUG: loading drawings from '{path}'")
 
 
 if __name__ == "__main__":
