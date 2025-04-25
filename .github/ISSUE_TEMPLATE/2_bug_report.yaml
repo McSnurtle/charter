@@ -1,8 +1,8 @@
 name: Bug report
-description: Report a bug or problem with the server
-title: "[Bug] Flipping around"
+description: Report a bug or problem with the software
+title: "[Bug] chart scaling reseting on chart updates"
 labels: ["bug"]
-projects: ["McSnurtle/1"]
+projects: ["McSnurtle/3"]
 assignees: ["McSnurtle"]
 
 body:
@@ -10,13 +10,13 @@ body:
     id: warning
     attributes:
       value: |
-        **Before filling out this issue form:** Ensure you have downloaded and are using the latest modpack version.
+        **Before filling out this issue form:** Ensure you have downloaded and are using the latest version of the software.
   - type: textarea
     id: description
     attributes:
       label: "Describe the bug"
       description: A clear and concise description of what the bug is and affects.
-      placeholder: My friend flipped upside down and, when walking forward, started zooming into the sky at the speed of sound.
+      placeholder: Every time the chart view updates to show more / new data, the scaling (changed by dragging the price value bar on the right-hand side) is reset to it's default, auto-scale self again.
     validations:
       required: true
   - type: textarea
@@ -25,28 +25,17 @@ body:
       label: "Steps to reproduce"
       description: "Steps to reproduce the behaviour:"
       placeholder: |
-        1. Go to ...
+        1. Adjust scaling 
         2. Click on ...
         3. Scroll down to ...
         4. See error
     validations:
       required: false
-  - type: dropdown
-    id: singleplayer
-    attributes:
-      label: "Singleplayer?"
-      description: "Was this bug found in singleplayer?"
-      options:
-        - "Yes"
-        - "No"
-      default: 1
-    validations:
-      required: true
   - type: input
     id: version
     attributes:
-      label: "Server Version"
-      description: "The current version of the server (the version number from the latest changelog, i.e. v1.8)"
+      label: "Release"
+      description: "What version of the program were you using (the version number from the latest changelog, i.e. v1.8)"
       placeholder: "vX.Y.Z"
     validations:
       required: true
@@ -54,19 +43,8 @@ body:
     id: expected
     attributes:
       label: "Expected Behaviour"
-      description: "A clear and concise desription of what you expected to happen."
-      placeholder: "My friend to not fly into the sky at the speed of sound"
-    validations:
-      required: false
-  - type: textarea
-    id: screenshots
-    attributes:
-      label: "Screenshots (Optional)"
-      description: "Attach screenshots to help explain the problem."
-      placeholder: "Drag & Drop here!"
-      value: "Drag & Drop here!"
-      description: "If applicable, add screenshots to help explain the problem."
-      value: "None"
+      description: "A clear and concise desription of what you expected to / should happen."
+      placeholder: "The chart scaling should persist refreshes, with auto-scaling being togglable via button + hotkey."
     validations:
       required: false
   - type: textarea
@@ -75,6 +53,6 @@ body:
       label: "Additional Context"
       description: "Added notes or context surrounding the issue."
       value: "None"
-      placeholder: "Dude wtf he's still flying."
+      placeholder: ""
     validations:
       required: false
