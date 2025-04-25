@@ -56,7 +56,7 @@ python src/main.py
 | `<Ctrl>+L` | Load saved drawings |
 
 ## Versioning
-This project strictly adheres to the very real strict rules and regulations outlined in [this random stackoverflow comment](<https://softwareengineering.stackexchange.com/a/255201>) by "amon" and loosely follows the project structuring guide as outlined in [AlexDCode/Software-Development-Project-Structure](<https://github.com/AlexDCode/Software-Development-Project-Structure/tree/master>)
+This project strictly adheres to the very real strict rules and regulations outlined in [this random stackoverflow comment](<https://softwareengineering.stackexchange.com/a/255201>) by "amon" and loosely follows the project structuring guide as outlined in [AlexDCode/Software-Development-Project-Structure](<https://github.com/AlexDCode/Software-Development-Project-Structure/tree/master>).
 ![image](https://github.com/user-attachments/assets/9946aa62-9155-4741-9335-16f8856c7f9e)
 
 ## Configuration
