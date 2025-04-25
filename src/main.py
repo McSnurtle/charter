@@ -41,10 +41,6 @@ class UI(Chart):
         self.topbar.menu("indicators", options=indicators.list_names(), default="SMA", func=self.set_indicator)
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
 
-        # Add drawing tools menu
-        # TEMPORARILY UN-EXPOSE DRAWING TOOLS UNTIL RENDERING IS FIXED
-        # self.topbar.menu("drawing_tools", options=('None', 'Trend Line', 'Horizontal Line', 'Ray', 'Arrow', 'Text'), default='None', func=self.set_drawing_mode)
-
         self.events.search += self.on_search
         self.hotkey("ctrl", "R", self.refresh)
         self.hotkey("ctrl", "S", self.save_current_drawings)
