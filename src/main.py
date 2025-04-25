@@ -3,11 +3,12 @@
 import sys
 from threading import Thread
 from time import sleep
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List
 
 from utils.indicators import registry as indicators
 from utils.scrape import get_historical
 from utils.ui import get_preferences, popup
+from utils.drawings import save_drawings, load_drawings
 
 import pandas as pd
 from lightweight_charts import Chart
@@ -18,6 +19,7 @@ class UI(Chart):
     REFRESH_RATE: int = 60   # time to wait (seconds) between refreshing the markets. Min: 1min
     SYMBOL: str = "BTC-USD"
     INTERVAL: str = "1d"
+    DRAWING_MODE: str = "none"
 
     def __init__(self, config: dict[str, Any] = {}, symbol: str = "BTC-USD"):
         super().__init__(toolbox=True)
@@ -36,12 +38,18 @@ class UI(Chart):
         self.topbar.textbox('symbol', symbol)
         self.topbar.menu("indicators", options=indicators.list_names(), default="SMA", func=self.set_indicator)
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
+        
+        # Add drawing tools menu
+        self.topbar.menu("drawing_tools", options=['None', 'Trend Line', 'Horizontal Line', 'Ray', 'Arrow', 'Text'], default='None', func=self.set_drawing_mode)
 
         self.events.search += self.on_search
+        self.events.click += self.on_chart_click
         self.hotkey("ctrl", "R", self.refresh)
+        self.hotkey("esc", None, self.clear_drawing_mode)
 
         # vars
         self.threads: list[Thread] = []
+        self.drawing_start_point = None
 
         self.init_data()
 
@@ -93,6 +101,11 @@ class UI(Chart):
         if isinstance(df, pd.DataFrame) and not df.empty:
             self.dataframe = df
             self.set(df=self.dataframe, keep_drawings=keep_drawings)
+            
+            # Load saved drawings if not keeping existing ones
+            if not keep_drawings:
+                self.load_saved_drawings()
+                
             return df
         else:
             popup("Data Error", f"There was an error retrieving the market data for symbol '{self.SYMBOL}'. Please check the logs for more information", icon="error")
@@ -119,6 +132,82 @@ class UI(Chart):
         self.SCRAPING = False
         self.exit()
         sys.exit(1)
+
+    def set_drawing_mode(self, state: Any) -> None:
+        """Set the current drawing tool mode"""
+        mode = self.topbar['drawing_tools'].value
+        self.DRAWING_MODE = mode.lower().replace(' ', '_')
+        if self.DRAWING_MODE == 'none':
+            self.clear_drawing_mode()
+
+    def clear_drawing_mode(self, state: Any = None) -> None:
+        """Clear the current drawing mode and reset state"""
+        self.DRAWING_MODE = 'none'
+        self.drawing_start_point = None
+        self.topbar['drawing_tools'].set('None')
+
+    def on_chart_click(self, state: Any) -> None:
+        """Handle chart clicks for drawing tools"""
+        if self.DRAWING_MODE == 'none':
+            return
+
+        x, y = state.time, state.price
+
+        if self.drawing_start_point is None:
+            self.drawing_start_point = (x, y)
+            return
+
+        start_x, start_y = self.drawing_start_point
+        
+        if self.DRAWING_MODE == 'trend_line':
+            self.create_line(name=f"trendline_{x}").set_markers([
+                {'time': start_x, 'value': start_y},
+                {'time': x, 'value': y}
+            ])
+        elif self.DRAWING_MODE == 'horizontal_line':
+            self.create_horizontal_line(name=f"hline_{x}", price=start_y)
+        elif self.DRAWING_MODE == 'ray':
+            self.create_line(name=f"ray_{x}").set_markers([
+                {'time': start_x, 'value': start_y},
+                {'time': x, 'value': y}
+            ]).extend_right()
+        elif self.DRAWING_MODE == 'arrow':
+            self.create_line(name=f"arrow_{x}").set_markers([
+                {'time': start_x, 'value': start_y},
+                {'time': x, 'value': y}
+            ]).style(width=2, style='arrow')
+        elif self.DRAWING_MODE == 'text':
+            self.create_label(name=f"text_{x}", text="Double click to edit", x=x, y=y)
+
+        # Reset drawing state
+        self.drawing_start_point = None
+        
+        # Save drawings after adding new one
+        self.save_current_drawings()
+
+    def save_current_drawings(self) -> None:
+        """Save current chart drawings"""
+        drawings = []
+        for drawing in self.drawings:
+            if isinstance(drawing, dict):
+                drawings.append(drawing)
+        save_drawings(self.SYMBOL, self.INTERVAL, drawings)
+
+    def load_saved_drawings(self) -> None:
+        """Load saved drawings for current symbol/interval"""
+        drawings = load_drawings(self.SYMBOL, self.INTERVAL)
+        for drawing in drawings:
+            if drawing.get('type') == 'line':
+                line = self.create_line(name=drawing['name'])
+                line.set_markers(drawing['markers'])
+                if drawing.get('extend_right'):
+                    line.extend_right()
+                if drawing.get('style'):
+                    line.style(**drawing['style'])
+            elif drawing.get('type') == 'horizontal_line':
+                self.create_horizontal_line(name=drawing['name'], price=drawing['price'])
+            elif drawing.get('type') == 'label':
+                self.create_label(name=drawing['name'], text=drawing['text'], x=drawing['x'], y=drawing['y'])
 
 
 if __name__ == "__main__":
