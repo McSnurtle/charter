@@ -92,7 +92,7 @@ class UI(Chart):
                 """)
         self.indicators.clear()
 
-        self.refresh_chart(keep_drawings=False)
+        # self.refresh_chart(keep_drawings=False)
 
     def on_screenshot(self, state: Any) -> bytes | None:
         print("DEBUG: saving screenshot to data/screenshots/")
