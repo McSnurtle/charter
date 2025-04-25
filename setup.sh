@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ ! -d "./venv"]; then
+if [ ! -d "./venv" ]; then
     echo "Creating virtual environment"
     python3 --verbose -m venv venv
 fi
