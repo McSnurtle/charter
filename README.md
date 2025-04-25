@@ -5,6 +5,33 @@ A lightweight, live chart analysis tool written entirely in vanilla python (mayb
 
 Using live data from the Yahoo! Finance API via the yfinance module, and the UI by TradingView's own Lightweight Charts API via the lightweight-charts-python wrapper: this sleek, live and intuitive chart analysis tool is sure to get you where you need to go, and further.
 
+## Installation / Quick Start🌨️
+To install the project, first ensure you have it's sole dependency: `Python3`.
+
+**1.** Clone the project
+Press the big green Code button, then click download zip to install the source code, and extract the `.zip` file you download.
+Alternatively, you can run `git clone https://github.com/McSnurtle/charter.git` to download the source directly.
+
+**2.** Run the setup wizard
+Depending on your platform, run the `setup.sh` or `setup.bat` files accordingly - `.sh` for unix based systems (macOS included), and `.bat` for windows.
+This script executes the following commands if you prefer to do this step manually:
+
+for unix:
+```shell
+python -m venv venv \
+pip install --upgrade --verbose -r requirements.txt \
+source ./venv/bin/activate
+python src/main.py
+```
+
+for windows:
+```batch
+python -m venv venv \
+pip install --upgrade --verbose -r requirements.txt \
+.\venv\Scripts\activate
+python src/main.py
+```
+
 ## Versioning
 This project strictly adheres to the very real rules and regulations outlined in [this random stackoverflow comment](<https://softwareengineering.stackexchange.com/a/255201>) by "amon".
 ![image](https://github.com/user-attachments/assets/9946aa62-9155-4741-9335-16f8856c7f9e)
