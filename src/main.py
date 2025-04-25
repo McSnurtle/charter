@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 from utils.indicators import registry as indicators
 from utils.scrape import get_historical
-from utils.ui import get_preferences, popup
+from utils.platform import get_preferences, popup
 from utils.drawings import save_drawings, load_drawings
 
 import pandas as pd
