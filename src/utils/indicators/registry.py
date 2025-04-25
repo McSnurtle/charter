@@ -41,9 +41,9 @@ def register_indicator(name: Any = None):
 
 # init
 if __name__ != "__main__":
-    print("amogus")
     indicators: dict[str, Callable] = {}
     calculators: str = os.path.join(os.path.dirname(__file__), "calculators")
     for script in os.listdir(calculators):
         if script.endswith('.py'):
+            print(f"Found valid indicator '{script}', importing...")
             import_module(f"utils.indicators.calculators.{script[:-3]}")  # remove .py to only run `import script` and not `import script.py`
