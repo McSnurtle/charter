@@ -1,9 +1,9 @@
 @echo on
 if not exist venv\ (
     echo Creating virtual environment
-    python --verbose -m venv venv
+    python3 --verbose -m venv venv
 )
 
 .\venv\Scripts\activate
-pip install --upgrade --verbose -r requirements.txt
-python src/main.py
+pip3 install --upgrade --verbose -r requirements.txt
+python3 src/main.py
