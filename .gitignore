@@ -175,3 +175,7 @@ cython_debug/
 
 # Project specific cache clutter:
 *.csv
+
+# Drawing files
+data/drawings/*.json
+!data/drawings/.gitkeep
