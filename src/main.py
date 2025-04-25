@@ -82,14 +82,15 @@ class UI(Chart):
     def clear_lines(self, state: Any = None) -> None:
         print("DEBUG: CLEARING LINES!!!")
         for line in self.indicators:
-            if hasattr(self, 'win'):
-                self.win.run_script(f"""
-                    const id = '{line.id}';
-                    const drawing = window.toolbox?.drawings.find(d => d.id === id);
-                    if (drawing) {{
-                        window.toolbox.removeDrawing(drawing);
-                    }}
-                """)
+            # if hasattr(self, 'win'):
+            #     self.win.run_script(f"""
+            #         const id = '{line.id}';
+            #         const drawing = window.toolbox?.drawings.find(d => d.id === id);
+            #         if (drawing) {{
+            #             window.toolbox.removeDrawing(drawing);
+            #         }}
+            #     """)
+            pass
         self.indicators.clear()
 
         # self.refresh_chart(keep_drawings=False)
