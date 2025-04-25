@@ -7,10 +7,11 @@ from typing import Any, Callable
 
 from utils.indicators import registry as indicators
 from utils.scrape import get_historical
-from utils.ui import get_preferences, popup, open_indicator_selector
+from utils.ui import get_preferences, popup
 
 import pandas as pd
 from lightweight_charts import Chart
+from lightweight_charts.abstract import Line
 
 
 class UI(Chart):
@@ -23,8 +24,9 @@ class UI(Chart):
         super().__init__(toolbox=True)
         # init
         self.dataframe: pd.DataFrame = pd.DataFrame()
-        self.indicators: dict[str, bool] = {}
+        self.indicators: list[Line] = []
         self.config: dict[str, Any] = config
+        self.threads: list[Thread] = []
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
             popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
@@ -34,15 +36,12 @@ class UI(Chart):
         self.set(df=self.dataframe)
         self.update_watermark()
         self.topbar.button('symbol', symbol, func=self.refresh_chart)
-        self.topbar.button("indicators", "Indicators", func=self.set_indicators)
+        # self.topbar.button("indicators", "Indicators", func=self.set_indicators)
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
 
         self.events.search += self.on_search
         self.hotkey("ctrl", "R", self.refresh_chart)
-        self.hotkey("ctrl", "C", self.set_indicators)
-
-        # vars
-        self.threads: list[Thread] = []
+        self.hotkey("ctrl", "C", self.clear_lines)
 
         self.init_data()
 
@@ -58,39 +57,40 @@ class UI(Chart):
         self.INTERVAL = self.topbar['timeframe'].value
         self.refresh_chart()
 
-    def set_indicators(self, callback: Any = None) -> None:
-        self.indicators: dict[str, bool] = open_indicator_selector(self.indicators)
-        self.refresh_indicators()
-
     def refresh_indicators(self) -> None:
+        """Clears the stored list of indicator chart lines, and repopulates it with freshly calculated data"""
         self.clear_lines()
 
-        for name, state in self.indicators.items():
-            if state:
-                line = self.create_line(name=name, price_line=True, price_label=True)
+        for name in indicators.list_names():
+            if isinstance(name, str):
+                line: Line = self.create_line(name=name, price_line=True, price_label=True)
+                line.id = name
                 calculator: Callable = indicators.get_function(name=name)
                 data: pd.DataFrame = calculator(self.dataframe)
                 line.set(data)
+                self.indicators.append(line)
 
-    def clear_lines(self):
-        self.run_script(f'if ({self.id}.lines) {self.id}.toolBox.clearDrawings()')
+    def clear_lines(self, state: Any = None) -> None:
+        print("DEBUG: CLEARING LINES!!!")
+        for line in self.indicators:
+            if hasattr(self, 'win'):
+                self.win.run_script(f"""
+                    const id = '{line.id}';
+                    const drawing = window.toolbox?.drawings.find(d => d.id === id);
+                    if (drawing) {{
+                        window.toolbox.removeDrawing(drawing);
+                    }}
+                """)
+        self.indicators.clear()
 
     def init_data(self) -> None:
         # initial chart data
         self.init_config()
 
-        self.update_chart()
-        if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
-            popup("Data Error", f"There was an error retrieving the market data for symbol '{self.SYMBOL}'. Please check the logs for more information", icon="error")
-            self.kill()
         # live chart loop
         scrape_thread: Thread = Thread(target=self.scrape_loop)
         scrape_thread.start()
         self.threads.append(scrape_thread)
-        # indicator init
-        for indicator_name in indicators.list_names():
-            if isinstance(indicator_name, str):
-                self.indicators[indicator_name] = False
 
     def init_config(self) -> dict[str, Any]:
         self.REFRESH_RATE = self.config['chart']['refresh_rate']
