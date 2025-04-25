@@ -9,6 +9,7 @@ from utils.indicators import registry as indicators
 from utils.scrape import get_historical
 from utils.platform import get_preferences, popup
 from utils.drawings import save_drawings, load_drawings
+from utils.screenshot import save_screenshot
 
 import pandas as pd
 from lightweight_charts import Chart
@@ -45,6 +46,7 @@ class UI(Chart):
         self.hotkey("ctrl", "R", self.refresh)
         self.hotkey("ctrl", "S", self.save_current_drawings)
         self.hotkey("ctrl", "L", self.load_saved_drawings)
+        self.hotkey("ctrl", "P", self.on_screenshot)
 
         self.init_data()
 
@@ -60,6 +62,14 @@ class UI(Chart):
         self.INTERVAL = self.topbar['timeframe'].value
         self.refresh(keep_drawings=False)
 
+    def on_screenshot(self, state: Any) -> bytes | None:
+        print("DEBUG: saving screenshot to data/screenshots/")
+
+        filename: str | None = save_screenshot(self.SYMBOL, self.INTERVAL, self)
+        if isinstance(filename, str):
+            # COPY IMAGE F
+            pass
+        return
 
     def set_indicator(self, callback: Any) -> None:
         indicator_name: str = self.topbar['indicators'].value

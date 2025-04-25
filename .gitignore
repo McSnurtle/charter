@@ -179,3 +179,7 @@ cython_debug/
 # Drawing files
 data/drawings/*.json
 !data/drawings/.gitkeep
+
+# Screenshot files
+data/screenshots/*.png
+!data/screenshots/.gitkeep

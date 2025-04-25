@@ -6,3 +6,5 @@ rope~=1.13.0
 pyqt5~=5.15.11
 pywebview[qt]>=5.0.5
 setuptools~=79.0.1
+Pillow~=11.2.1
+copykitten>=1.2.2
