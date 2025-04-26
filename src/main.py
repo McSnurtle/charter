@@ -138,8 +138,8 @@ class UI(Chart):
 
     def kill(self) -> None:
         print("WARN | KILLING SELF!")
-        self.SCRAPING = False
         self.exit()
+        running = False
         sys.exit(1)
 
     def save_current_drawings(self, state: Any = None) -> None:
@@ -153,9 +153,18 @@ class UI(Chart):
         print(f"DEBUG: loading drawings from '{path}'")
 
 
-if __name__ == "__main__":
+def main() -> None:
     print(f"Using indicator set: {indicators.list_names()}...")
     print(f"Using config: {get_preferences()}")
 
     root = UI(config=get_preferences(), symbol="BTC-USD")
-    root.show(block=True)
+    root.show(block=False)
+    
+    while running:
+        pass
+
+
+if __name__ == "__main__":
+    running: bool = True
+    
+    main()
