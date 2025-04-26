@@ -28,7 +28,7 @@ for windows:
 ```batch
 python -m venv venv \
 pip install --upgrade --verbose -r requirements.txt \
-.\venv\Scripts\activate \
+call .\venv\Scripts\activate \
 python src/main.py
 ```
 
