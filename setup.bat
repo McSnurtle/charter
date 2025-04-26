@@ -1,8 +1,10 @@
-@echo on
+@echo off
 setlocal enabledelayedexpansion
 
 :: Update checker
 echo Checking for updates
+git fetch 
+
 for /f %%i in ('git rev-parse @') do set LOCAL=%%i
 for /f %%i in ('git rev-parse @{u}') do set REMOTE=%%i
 for /f %%i in ('git merge-base @ @{u}') do set BASE=%%i
