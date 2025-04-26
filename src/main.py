@@ -101,7 +101,10 @@ class UI(Chart):
             print(f"Pulling new data to dataframe on ticker {self.SYMBOL.upper()}-{self.INTERVAL.upper()}...")
             self.update_chart(keep_drawings=True)
 
-            sleep(self.REFRESH_RATE)
+            for second in range(self.REFRESH_RATE):
+                if not self.is_alive:
+                    break
+                sleep(second)
 
     def update_chart(self, keep_drawings: bool = False) -> pd.DataFrame | None:
         df: pd.DataFrame = get_historical(symbol=self.SYMBOL, interval=self.INTERVAL)
