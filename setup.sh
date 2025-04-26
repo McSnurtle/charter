@@ -10,7 +10,7 @@ BASE=$(git merge-base @ @{u})
 
 if [ "$LOCAL" = "$REMOTE" ]; then
     echo "Up to date"
-elif [ (git rev-parse @) = (git merge-base @ @{u}) ]; then
+elif [ "$LOCAL" = "$BASE" ]; then
     echo "Update found"
     python3 src/updater.py
     PY_RET=$?
