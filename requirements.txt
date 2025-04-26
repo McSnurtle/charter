@@ -2,6 +2,5 @@ yfinance>=0.2.55
 lightweight-charts~=2.1
 pandas>=2.2.3
 pywebview[qt]>=5.0.5
-setuptools~=79.0.1
 Pillow~=11.2.1
 copykitten>=1.2.2
