@@ -1,7 +1,7 @@
 name: "Feature request"
 description: "Suggest an idea or feature to add to the program"
 title: "[Feature] persistent drawings"
-labels: ["feature"]
+labels: ["type: feature"]
 assignees: ["McSnurtle"]
 projects: ["McSnurtle/3"]
 
