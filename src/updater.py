@@ -22,14 +22,14 @@ def get_ref_version(branch: str = "main") -> str:
         return "unknown"
     return json.loads(result.stdout)["version"]
 
-def get_local_branch() -> str | None:
+def get_local_branch() -> str:
     result: CompletedProcess = subprocess.run(
         ["git", "rev-parse", "--abbrev-ref", "HEAD"],
         stdout=subprocess.PIPE,
         text=True
     )
     if result.returncode != 0:
-        return None
+        return "main"
     return result.stdout.strip()
     
 
@@ -38,7 +38,7 @@ def get_local_version() -> str:
         return json.load(fp=fp)["version"]
     
 def main() -> None:
-    question: str | None = popup(title="Update Checker", message=f"An update has been found for charter: {get_local_version()} (local) vs {get_ref_version(get_local_branch() if get_local_branch() is not None else 'main')} (remote)\n\nWould you like to download it now? Selecting 'No' will continue to the currently installed version.", icon="info", options="yesnocancel")
+    question: str | None = popup(title="Update Checker", message=f"An update has been found for charter: {get_local_version()} (local) vs {get_ref_version(get_local_branch())} (remote)\n\nWould you like to download it now? Selecting 'No' will continue to the currently installed version.", icon="info", options="yesnocancel")
     if not isinstance(question, str):
         sys.exit(2) # equivalent to "cancel"
     
