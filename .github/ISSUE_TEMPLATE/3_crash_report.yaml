@@ -44,11 +44,11 @@ body:
       label: "Operating system"
       description: "What operating system were you using?"
       options:
-      - "Windows"
-      - "MacOS"
-      - "Linux (Wayland)"
-      - "Linux (DirectX11)
-      - "Other"
+        - Windows
+        - MacOS
+        - Linux (Wayland)
+        - Linux (DirectX11)
+        - Other
       default: 1
     validations:
       required: true
