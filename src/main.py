@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 from utils.indicators import registry as indicators
 from utils.scrape import get_historical
-from utils.platform import get_preferences, popup
+from utils.platform import get_preferences, popup, is_macos
 from utils.drawings import save_drawings, load_drawings
 from utils.screenshot import save_screenshot
 from utils.clipboard import copy_image
@@ -39,10 +39,16 @@ class UI(Chart):
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
 
         self.events.search += self.on_search
-        self.hotkey("ctrl", "R", self.refresh)
-        self.hotkey("ctrl", "S", self.save_current_drawings)
-        self.hotkey("ctrl", "L", self.load_saved_drawings)
-        self.hotkey("ctrl", "P", self.on_screenshot)
+        if not is_macos():
+            self.hotkey("ctrl", "R", self.refresh)
+            self.hotkey("ctrl", "S", self.save_current_drawings)
+            self.hotkey("ctrl", "L", self.load_saved_drawings)
+            self.hotkey("ctrl", "P", self.on_screenshot)
+        elif is_macos():
+            self.hotkey("meta", "R", self.refresh)
+            self.hotkey("meta", "S", self.save_current_drawings)
+            self.hotkey("meta", "L", self.load_saved_drawings)
+            self.hotkey("meta", "P", self.on_screenshot)
 
         self.init_data()
 
