@@ -15,7 +15,7 @@ if "%LOCAL%" == "%REMOTE%" (
     echo Update found
 
     python3 src/updater.py
-    set PY_RET=%ERROR_LEVEL%
+    set PY_RET=%ERRORLEVEL%
 
     if "!PY_RET!" == "0" (
         echo Downloading update
