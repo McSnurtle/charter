@@ -1,7 +1,7 @@
 name: Bug report
 description: Report a bug or problem with the software
 title: "[Bug] chart scaling reseting on chart updates"
-labels: ["bug"]
+labels: ["type: bug"]
 projects: ["McSnurtle/3"]
 assignees: ["McSnurtle"]
 
