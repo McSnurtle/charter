@@ -1,66 +1,60 @@
 name: "Crash report"
-description: "A detail of a crash and a walkthrough of all its errors"
-title: "[Crash] while bombing"
-labels: ["bug", "crashreport", "unknown"]
+description: "A detailed report of a crash and a walkthrough of all its errors"
+title: "[Crash] while showing popup"
+labels: ["type: bug", "type: crash"]
 assignees: ["McSnurtle"]
-projects: ["McSnurtle/1"]
+projects: ["McSnurtle/3"]
 
 body:
   - type: markdown
     id: warning
     attributes:
       value: |
-        **Before submitting this crash report:** ensure you are using the latest stable release of the server and modpack.
-        "**Before submitting this crash report:** ensure you are using the latest stable release of the server and modpack."
+        **Before submitting this crash report:** ensure you are using the latest release of whichever branch you are using.
   - type: textarea
     id: when
     attributes:
       label: "When was the crash?"
       description: |
         A concise description of what you were doing before the game crashed.
-      placeholder: "The crash happened while attempting to bomb my friend's base."
+      placeholder: "The program crashed while it was attempting to render a popup window to inform me that the 4h interval is unavailable for the symbol BTC-USD."
     validations:
       required: true
   - type: textarea
     id: log
     attributes:
-      label: "Crash Log"
+      label: "Crash log"
       description: |
-        Draw and drop the .txt crash report below. This report should be found in `%appdata%/.minecraft/crash-reports/.`, where the file name contains the date and time of the crash.
+        Drag and drop the .txt log report below. This report should be found in `charter/logs/`, where the file name contains the date and time of when you started the program.
       placeholder: "Attach the crash report, or a link to a gist here."
     validations:
       required: false
   - type: input
     id: version
     attributes:
-      label: "Server Version"
+      label: "Release"
       description: |
-        The current version of the server (found in the latest changelog, i.e. v1.8)
+        The current version of the program you were using during the crash.
       placeholder: "vX.Y.Z"
     validations:
       required: true
   - type: dropdown
-    id: singleplayer
+    id: os
     attributes:
-      label: "Singleplayer?"
-      description: "Did the crash happen while in singleplayer?"
+      label: "Operating system"
+      description: "What operating system were you using?"
       options:
-        - "Yes"
-        - "No"
+        - "Windows"
+        - "MacOS"
+        - "Linux (Wayland)"
+        - "Linux (DirectX11)
+        - "Other"
       default: 1
     validations:
       required: true
-  - type: textarea
-    id: screenshot
-    attributes:
-      label: "Screenshots (Optional)"
-      description: "Attach screenshots to help explain your problem."
-      placeholder: "(image of chemicals in the water turning the frogs gay)"
-    validations:
-      required: false
   - type: textarea
     id: additional
     attributes:
       label: "Additional Context"
       description: "Add any notes or additional context surrounding the crash."
-      placeholder: None of the innocent civilians survived the explosion. Rip.
+      placeholder: N/A
