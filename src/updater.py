@@ -14,7 +14,7 @@ def get_ref_version(branch: str = "main") -> str:
     
 
     result: CompletedProcess = subprocess.run(
-        ["git", "show", "origin/{branch}:etc/version.json"],
+        ["git", "show", f"origin/{branch}:etc/version.json"],
         stdout=subprocess.PIPE,
         text=True
     )
