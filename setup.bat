@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 :: Update checker
 echo Checking for updates
-git fetch 
+git fetch
 
 for /f %%i in ('git rev-parse @') do set LOCAL=%%i
 for /f %%i in ('git rev-parse @{u}') do set REMOTE=%%i
@@ -34,5 +34,6 @@ if "%LOCAL%" == "%REMOTE%" (
 echo Attempting creation of virtual environment
 python3 -m venv venv
 call .\venv\Scripts\activate
+echo Upgrading dependencies
 pip3 install --upgrade --verbose -r requirements.txt
 python3 src/main.py
