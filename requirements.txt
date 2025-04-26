@@ -1,9 +1,6 @@
 yfinance>=0.2.55
 lightweight-charts~=2.1
 pandas>=2.2.3
-pylint~=3.3.6
-rope~=1.13.0
-pyqt5~=5.15.11
 pywebview[qt]>=5.0.5
 setuptools~=79.0.1
 Pillow~=11.2.1
