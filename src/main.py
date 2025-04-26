@@ -83,7 +83,7 @@ class UI(Chart):
 
         self.update_chart()
         if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
-            popup("Data Error", f"There was an error retrieving the market data for symbol '{self.symbol}'. Please check the logs for more information", icon="error")
+            popup("Data Error", f"There was an error retrieving the market data for symbol '{self.SYMBOL}'. Please check the logs for more information", icon="error")
             self.kill()
 
         scrape_thread: Thread = Thread(target=self.scrape_loop)
@@ -107,7 +107,7 @@ class UI(Chart):
                 sleep(second)
 
     def update_chart(self, keep_drawings: bool = False) -> pd.DataFrame | None:
-        df: pd.DataFrame = get_historical(symbol=self.SYMBOL, interval=self.INTERVAL)
+        df: pd.DataFrame | pd.Series | None = get_historical(symbol=self.SYMBOL, interval=self.INTERVAL)
         if isinstance(df, pd.DataFrame) and not df.empty:
             self.dataframe = df
             self.set(df=self.dataframe, keep_drawings=keep_drawings)
