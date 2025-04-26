@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Checking for updates"
+git fetch; git pull origin main
 echo "Attempting creation of virtual environment"
 python3 -m venv venv
 source venv/bin/activate

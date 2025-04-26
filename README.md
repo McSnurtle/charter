@@ -18,6 +18,7 @@ This script executes the following commands if you prefer to do this step manual
 
 for unix:
 ```shell
+git fetch && git pull origin main \
 python -m venv venv \
 pip install --upgrade --verbose -r requirements.txt \
 source ./venv/bin/activate \
@@ -26,6 +27,7 @@ python src/main.py
 
 for windows:
 ```batch
+git fetch; git pull origin main \
 python -m venv venv \
 pip install --upgrade --verbose -r requirements.txt \
 call .\venv\Scripts\activate \
