@@ -21,7 +21,6 @@ class UI(Chart):
     REFRESH_RATE: int = 60   # time to wait (seconds) between refreshing the markets. Min: 1min
     SYMBOL: str = "BTC-USD"
     INTERVAL: str = "1d"
-    DRAWING_MODE: str = "none"
 
     def __init__(self, config: dict[str, Any] = {}, symbol: str = "BTC-USD"):
         super().__init__(toolbox=True)
@@ -31,16 +30,12 @@ class UI(Chart):
         self.indicators: dict[str, bool] = {}
         self.drawings: list[dict] = []
         self.threads: list[Thread] = []
-        self.update_chart()
-        if not isinstance(self.dataframe, pd.DataFrame) or self.dataframe.empty:        # if there is an error...
-            popup("Data Error", f"There was an error retrieving the market data for symbol '{symbol}'. Please check the logs for more information", icon="error")
-            self.kill()
 
         self.legend(True)
         self.set(df=self.dataframe)
         self.update_watermark()
         self.topbar.textbox('symbol', symbol)
-        self.topbar.menu("indicators", options=indicators.list_names(), default="SMA", func=self.set_indicator)
+        # self.topbar.menu("indicators", options=indicators.list_names(), default="SMA", func=self.set_indicator)
         self.topbar.switcher('timeframe', ('1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'), default='1d', func=self.on_timeframe_change)
 
         self.events.search += self.on_search
