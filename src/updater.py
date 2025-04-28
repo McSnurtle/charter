@@ -24,7 +24,7 @@ def get_ref_version(branch: str = "main") -> str:
 
 def get_local_branch() -> str:
     result: CompletedProcess = subprocess.run(
-        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        ["git", "branch", "--show-current"],
         stdout=subprocess.PIPE,
         text=True
     )
