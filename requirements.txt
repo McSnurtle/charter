@@ -3,5 +3,5 @@ lightweight-charts~=2.1
 pandas>=2.2.3
 Pillow~=11.2.1
 pywebview[qt]>=5.0.5
-tk-tools>=
+tk-tools>=0.17.0
 yfinance>=0.2.55
